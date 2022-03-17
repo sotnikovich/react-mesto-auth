@@ -1,0 +1,9 @@
+.modal__error {
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 15px;
+    margin-top: 5px;
+    opacity: 0;
+    display: block;
+    color: #FF0000;
+}
