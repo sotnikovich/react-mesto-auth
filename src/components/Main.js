@@ -9,27 +9,14 @@ function Main(props) {
   const [cards, setCards] = React.useState([]);
 
   React.useEffect(() => {
-    api
-      .getUserInfo()
-      .then((data) => {
-        setUserName(data.name);
-        setUserDescription(data.about);
-        setUserAvatar(data.avatar);
+    Promise.all([api.getUserInfo(), api.getInitialCards()])
+      .then(([userData, cards]) => {
+        setUserName(userData.name);
+        setUserDescription(userData.job);
+        setUserAvatar(userData.avatar);
+        setCards(cards);
       })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, [userName, userDescription, userAvatar]);
-
-  React.useEffect(() => {
-    api
-      .getInitialCards()
-      .then((data) => {
-        setCards(data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch((err) => console.log(err));
   }, []);
 
   return (
@@ -71,21 +58,6 @@ function Main(props) {
           <Card key={card._id} card={card} onCardClick={props.onCardClick} />
         ))}
       </section>
-      <div className="modal modal-confirm">
-        <div className="modal__inner">
-          <form className="form">
-            <button
-              className="modal__close"
-              type="button"
-              aria-label="закрытие попап"
-            ></button>
-            <h2 className="modal__title">Вы уверены?</h2>
-            <button className="modal__submit" type="submit">
-              Да
-            </button>
-          </form>
-        </div>
-      </div>
     </main>
   );
 }
