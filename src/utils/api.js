@@ -13,6 +13,7 @@ class Api {
 
   getUserInfo() {
     return fetch(`${this._baseUrl}users/me`, {
+      method: "GET",
       headers: this._headers,
     }).then((res) => this._checkResult(res));
   }
@@ -23,13 +24,13 @@ class Api {
     }).then((res) => this._checkResult(res));
   }
 
-  editProfile(data) {
+  setUserInfo(data) {
     return fetch(`${this._baseUrl}users/me`, {
       method: "PATCH",
       headers: this._headers,
       body: JSON.stringify({
         name: data.name,
-        about: data.job,
+        about: data.about,
       }),
     }).then((res) => this._checkResult(res));
   }
@@ -45,28 +46,36 @@ class Api {
     }).then((res) => this._checkResult(res));
   }
 
-  removeCard(data) {
+  deleteCard(data) {
     return fetch(`${this._baseUrl}cards/${data}`, {
       method: "DELETE",
       headers: this._headers,
     }).then((res) => this._checkResult(res));
   }
 
-  addCardLike(data) {
-    return fetch(`${this._baseUrl}cards/likes/${data}`, {
+  setLike(id) {
+    return fetch(`${this._baseUrl}cards/likes/${id}`, {
       method: "PUT",
       headers: this._headers,
     }).then((res) => this._checkResult(res));
   }
 
-  removeCardLike(data) {
-    return fetch(`${this._baseUrl}cards/likes/${data}`, {
+  changeLikeCardStatus(id, isLiked) {
+    if (isLiked) {
+      return this.deleteLike(id);
+    } else {
+      return this.setLike(id);
+    }
+  }
+
+  deleteLike(id) {
+    return fetch(`${this._baseUrl}cards/likes/${id}`, {
       method: "DELETE",
       headers: this._headers,
     }).then((res) => this._checkResult(res));
   }
 
-  updateAvatar(data) {
+  setUserAvatar(data) {
     return fetch(`${this._baseUrl}users/me/avatar`, {
       method: "PATCH",
       headers: this._headers,

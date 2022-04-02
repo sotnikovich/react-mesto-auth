@@ -10,9 +10,3 @@
     z-index: 10;
 }
 
-@media screen and (max-width: 530px) {
-    .modal__inner {
-        max-width: 282px;
-        padding: 25px 22px;
-    }
-}

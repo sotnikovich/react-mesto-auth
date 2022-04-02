@@ -13,7 +13,12 @@ function PopupWithForm(props) {
           aria-label="закрытие попап"
           onClick={props.onClose}
         ></button>
-        <form className="form" name={props.name} noValidate>
+        <form
+          className="form"
+          name={props.name}
+          noValidate
+          onSubmit={props.onSubmit}
+        >
           {props.children}
           <button className="modal__submit" type="submit">
             {props.buttonText}
