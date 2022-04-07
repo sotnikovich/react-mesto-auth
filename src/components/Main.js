@@ -6,20 +6,13 @@ function Main(props) {
   const currentUser = React.useContext(CurrentUserContext);
 
   return (
-    <main className="content">
+    <main>
       <section className="profile">
-        <button
-          className="profile__avatar-edit"
-          type="button"
-          aria-label="обновить аватар"
+        <div
+          className="profile__avatar"
+          style={{ backgroundImage: `url(${currentUser.avatar})` }}
           onClick={props.onEditAvatar}
-        >
-          <img
-            alt={`Аватар пользователя ${currentUser.name}`}
-            src={currentUser.avatar}
-            className="profile__avatar"
-          />
-        </button>
+        ></div>
         <div className="profile__info">
           <div className="profile__data">
             <h1 className="profile__title">{currentUser.name}</h1>

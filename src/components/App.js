@@ -1,5 +1,5 @@
 import React from "react";
-import "../index.css";
+import "../index.js";
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
@@ -41,27 +41,23 @@ function App() {
   }
 
   function handleUpdateAvatar(data) {
-    api.setUserAvatar(data).then(
-      (data) => {
+    api
+      .setUserAvatar(data)
+      .then((data) => {
         setCurrentUser(data);
         closeAllPopups();
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
+      })
+      .catch((err) => console.log(err));
   }
 
   function handleUpdateUser(data) {
-    api.setUserInfo(data).then(
-      (data) => {
+    api
+      .setUserInfo(data)
+      .then((data) => {
         setCurrentUser(data);
         closeAllPopups();
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
+      })
+      .catch((err) => console.log(err));
   }
 
   React.useEffect(() => {
@@ -107,29 +103,14 @@ function App() {
 
   function handleAddPlaceSubmit(data) {
     api.addNewCard(data).then(
-      (newCard) => {
+      ((newCard) => {
         setCards([newCard, ...cards]);
         closeAllPopups();
-      },
-      (err) => {
+      }).catch((err) => {
         console.log(err);
-      }
+      })
     );
   }
-
-  React.useEffect(() => {
-    function handleEscClose(evt) {
-      if (evt.key === "Escape") {
-        closeAllPopups();
-      }
-    }
-
-    document.addEventListener("keyup", handleEscClose);
-
-    return () => {
-      document.removeEventListener("keyup", handleEscClose);
-    };
-  }, []);
 
   function closeAllPopups() {
     setEditProfilePopupOpen(false);
