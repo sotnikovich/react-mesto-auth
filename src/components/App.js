@@ -1,5 +1,4 @@
 import React from "react";
-import "../index.js";
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
@@ -102,14 +101,15 @@ function App() {
   }
 
   function handleAddPlaceSubmit(data) {
-    api.addNewCard(data).then(
-      ((newCard) => {
+    api
+      .addNewCard(data)
+      .then((newCard) => {
         setCards([newCard, ...cards]);
         closeAllPopups();
-      }).catch((err) => {
-        console.log(err);
       })
-    );
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   function closeAllPopups() {

@@ -11,9 +11,7 @@ function PopupWithForm(props) {
       document.addEventListener("keydown", handleEscClose);
     }
     return () => {
-      if (!props.isOpen) {
-        document.removeEventListener("keydown", handleEscClose);
-      }
+      document.removeEventListener("keydown", handleEscClose);
     };
   }, [props.isOpen, props.onClose]);
   return (
