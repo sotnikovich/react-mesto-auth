@@ -9,6 +9,8 @@ import AddPlacePopup from "./AddPlacePopup";
 import ConfirmPopup from "./ConfirmPopup";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import api from "../utils/api";
+import ProtectedRoute from "./ProtectedRoute";
+import { Switch, Route } from "react-router-dom";
 
 function App() {
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] =
@@ -21,6 +23,7 @@ function App() {
   const [selectedCard, setSelectedCard] = React.useState({});
   const [currentUser, setCurrentUser] = React.useState({});
   const [cards, setCards] = React.useState([]);
+  const [loggedIn, setLoggedIn] = React.useState(false);
 
   function handleEditProfilePopupOpen() {
     setEditProfilePopupOpen(true);
@@ -125,15 +128,22 @@ function App() {
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
         <Header />
-        <Main
-          onEditProfile={handleEditProfilePopupOpen}
-          onAddPlace={handleAddPlacePopupOpen}
-          onEditAvatar={handleEditAvatarPopupOpen}
-          onCardClick={handleCardClick}
-          cards={cards}
-          onCardLike={handleCardLike}
-          onCardDelete={handleCardDeleteRequest}
-        />
+        <Switch>
+          <Route path="/sign-up"></Route>
+          <Route path="/sign-in"></Route>
+          <ProtectedRoute
+            path="/"
+            component={Main}
+            loggedIn={loggedIn}
+            cards={cards}
+            onCardLike={handleCardLike}
+            onCardDeleteRequest={handleCardDeleteRequest}
+            onEditProfile={handleEditProfilePopupOpen}
+            onAddPlace={handleAddPlacePopupOpen}
+            onEditAvatar={handleEditAvatarPopupOpen}
+            onCardClick={handleCardClick}
+          />
+        </Switch>
         <Footer />
         <EditAvatarPopup
           isOpen={isEditAvatarPopupOpen}
