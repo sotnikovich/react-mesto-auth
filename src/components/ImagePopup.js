@@ -1,6 +1,19 @@
 import React from "react";
 
 function ImagePopup(props) {
+  React.useEffect(() => {
+    function handleEscClose(e) {
+      if (e.key === "Escape") {
+        props.onClose();
+      }
+    }
+    if (props.isOpen) {
+      document.addEventListener("keydown", handleEscClose);
+    }
+    return () => {
+      document.removeEventListener("keydown", handleEscClose);
+    };
+  }, [props.isOpen, props.onClose]);
   return (
     <div
       className={`modal modal-img ${

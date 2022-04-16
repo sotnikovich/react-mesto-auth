@@ -7,39 +7,57 @@ import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import ConfirmPopup from "./ConfirmPopup";
-import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import api from "../utils/api";
+import BurgerMobile from "./BurgerMobile";
 import ProtectedRoute from "./ProtectedRoute";
-import { Switch, Route } from "react-router-dom";
+import Register from "./Register";
+import Login from "./Login";
+import InfoTooltip from "./InfoTooltip";
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import { Switch, Route, useHistory } from "react-router-dom";
+import * as auth from "../utils/auth";
+import api from "../utils/api";
+import { useState, useEffect } from "react";
 
 function App() {
-  const [isEditProfilePopupOpen, setEditProfilePopupOpen] =
-    React.useState(false);
-  const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
-  const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
-  const [isImagePopupOpen, setImagePopupOpen] = React.useState(false);
-  const [isConfirmPopupOpen, setConfirmPopupOpen] = React.useState(false);
-  const [deletedCard, setDeletedCard] = React.useState({});
-  const [selectedCard, setSelectedCard] = React.useState({});
-  const [currentUser, setCurrentUser] = React.useState({});
-  const [cards, setCards] = React.useState([]);
-  const [loggedIn, setLoggedIn] = React.useState(false);
+  const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false);
+  const [isAddPlacePopupOpen, setAddPlacePopupOpen] = useState(false);
+  const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = useState(false);
+  const [isImagePopupOpen, setImagePopupOpen] = useState(false);
+  const [isConfirmPopupOpen, setConfirmPopupOpen] = useState(false);
+  const [deletedCard, setDeletedCard] = useState({});
+  const [selectedCard, setSelectedCard] = useState({});
+  const [currentUser, setCurrentUser] = useState({});
+  const [cards, setCards] = useState([]);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [fail, setFail] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [isBurgerOpen, setIsBurgerOpen] = useState(false);
+  const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
+
+  const history = useHistory();
+  const [email, setEmail] = useState("");
 
   function handleEditProfilePopupOpen() {
     setEditProfilePopupOpen(true);
   }
-
   function handleAddPlacePopupOpen() {
     setAddPlacePopupOpen(true);
   }
-
   function handleEditAvatarPopupOpen() {
     setEditAvatarPopupOpen(true);
   }
-
   function handleCardClick(card) {
     setSelectedCard(card);
     setImagePopupOpen(true);
+  }
+
+  function handleInfoTooltipOpen() {
+    setIsInfoTooltipOpen(true);
+    setSubmitted(true);
+  }
+
+  function handleBurgerClick() {
+    setIsBurgerOpen(true);
   }
 
   function handleUpdateAvatar(data) {
@@ -51,7 +69,6 @@ function App() {
       })
       .catch((err) => console.log(err));
   }
-
   function handleUpdateUser(data) {
     api
       .setUserInfo(data)
@@ -62,7 +79,7 @@ function App() {
       .catch((err) => console.log(err));
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     Promise.all([api.getUserInfo(), api.getInitialCards()])
       .then(([data, cards]) => {
         setCurrentUser(data);
@@ -124,27 +141,71 @@ function App() {
     setSelectedCard({});
   }
 
+  function handleLogin() {
+    handleTokenCheck();
+  }
+
+  function handleLogOut() {
+    localStorage.removeItem("token");
+    history.push("/signin");
+  }
+
+  function handleTokenCheck() {
+    const token = localStorage.getItem("token");
+    if (token) {
+      auth.checkToken(token).then((res) => {
+        if (res.data) {
+          setLoggedIn(!loggedIn);
+          setEmail(res.data.email);
+          history.push("/");
+        } else if (res.message) {
+          return res.message;
+        }
+      });
+    } else {
+      return;
+    }
+  }
+
+  function handleRegistrationFail() {
+    setIsInfoTooltipOpen(!isInfoTooltipOpen);
+    setSubmitted(!submitted);
+    setFail(!fail);
+  }
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <Header />
+        <Header
+          loggedIn={loggedIn}
+          email={email}
+          onLogOut={handleLogOut}
+          onBurger={handleBurgerClick}
+        />
+        <BurgerMobile
+          isOpen={isBurgerOpen}
+          onClose={closeAllPopups}
+          email={email}
+          onLogOut={handleLogOut}
+        ></BurgerMobile>
         <Switch>
-          <Route path="/sign-up"></Route>
-          <Route path="/sign-in"></Route>
           <ProtectedRoute
+            exact
             path="/"
-            component={Main}
             loggedIn={loggedIn}
-            cards={cards}
-            onCardLike={handleCardLike}
-            onCardDeleteRequest={handleCardDeleteRequest}
             onEditProfile={handleEditProfilePopupOpen}
             onAddPlace={handleAddPlacePopupOpen}
             onEditAvatar={handleEditAvatarPopupOpen}
             onCardClick={handleCardClick}
-          />
+            cards={cards}
+            onCardLike={handleCardLike}
+            onCardDelete={handleCardDeleteRequest}
+            component={Main}
+          >
+            <Main />
+            <Footer />
+          </ProtectedRoute>
         </Switch>
-        <Footer />
         <EditAvatarPopup
           isOpen={isEditAvatarPopupOpen}
           onClose={closeAllPopups}
@@ -170,6 +231,21 @@ function App() {
           onClose={closeAllPopups}
           isOpen={isImagePopupOpen}
         />
+        <InfoTooltip
+          isOpen={isInfoTooltipOpen}
+          onClose={closeAllPopups}
+          submitted={submitted}
+          failed={fail}
+        ></InfoTooltip>
+        <Route path="/signup">
+          <Register
+            onRegister={handleInfoTooltipOpen}
+            onFail={handleRegistrationFail}
+          />
+        </Route>
+        <Route path="/signin">
+          <Login onLogin={handleLogin} onFail={handleRegistrationFail} />
+        </Route>
       </div>
     </CurrentUserContext.Provider>
   );

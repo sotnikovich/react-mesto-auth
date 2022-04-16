@@ -9,10 +9,10 @@ function InfoTooltip(props) {
         isOpen={props.isOpen}
         onClose={props.onClose}
         submitted={props.submitted}
-        name="popup__form"
+        name="infotool"
       >
-        <img src={failImage} className="popup__infotool-image" alt="провал" />
-        <h2 className={`form-heading popup__form-heading_centered`}>
+        <img src={failImage} className="modal__infotool-img" alt="провал" />
+        <h2 className={`modal__title`}>
           Что-то пошло не так! Попробуйте ещё раз.
         </h2>
       </PopupWithForm>
@@ -23,12 +23,10 @@ function InfoTooltip(props) {
         isOpen={props.isOpen}
         onClose={props.onClose}
         submitted={props.submitted}
-        name="popup__form"
+        name="infotool"
       >
-        <img src={successImage} className="popup__infotool-image" alt="успех" />
-        <h2 className={`form-heading popup__form-heading_centered`}>
-          Вы успешно зарегистрировались!
-        </h2>
+        <img src={successImage} className="modal__infotool-img" alt="успех" />
+        <h2 className={`modal__title`}>Вы успешно зарегистрировались!</h2>
       </PopupWithForm>
     );
   }
