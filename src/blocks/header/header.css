@@ -6,3 +6,8 @@
     justify-content: space-between;
 }
 
+@media screen and (min-width:320px) and (max-width: 551px) {
+  .header {
+    padding-top: 28px;
+  }
+}

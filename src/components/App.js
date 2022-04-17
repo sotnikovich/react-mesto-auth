@@ -57,7 +57,7 @@ function App() {
   }
 
   function handleBurgerClick() {
-    setIsBurgerOpen(true);
+    setIsBurgerOpen(!isBurgerOpen);
   }
 
   function handleUpdateAvatar(data) {
@@ -138,6 +138,7 @@ function App() {
     setEditAvatarPopupOpen(false);
     setImagePopupOpen(false);
     setConfirmPopupOpen(false);
+    setIsInfoTooltipOpen(false);
     setSelectedCard({});
   }
 
@@ -176,18 +177,18 @@ function App() {
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <Header
-          loggedIn={loggedIn}
-          email={email}
-          onLogOut={handleLogOut}
-          onBurger={handleBurgerClick}
-        />
         <BurgerMobile
           isOpen={isBurgerOpen}
           onClose={closeAllPopups}
           email={email}
           onLogOut={handleLogOut}
         ></BurgerMobile>
+        <Header
+          loggedIn={loggedIn}
+          email={email}
+          onLogOut={handleLogOut}
+          onBurger={handleBurgerClick}
+        />
         <Switch>
           <ProtectedRoute
             exact

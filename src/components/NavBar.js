@@ -31,7 +31,7 @@ function NavBar(props) {
         Войти
       </NavLink>
       {location.pathname === "/" ? (
-        <p className="header__element">{props.email}</p>
+        <p className="header__element header__element_mobile">{props.email}</p>
       ) : (
         ""
       )}

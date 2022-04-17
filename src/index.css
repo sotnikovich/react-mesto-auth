@@ -67,6 +67,7 @@
 @import url(./blocks/modal/__img/modal__img.css);
 @import url(./blocks/modal/__caption/modal__caption.css);
 @import url(./blocks/modal/__infotool-img/modal__infotool-img.css);
+@import url(./blocks/modal/__infotool/modal__infotool.css);
 
 /*modal-img*/
 

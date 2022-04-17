@@ -10,7 +10,7 @@ function Header(props) {
         loggedIn={props.loggedIn}
         email={props.email}
         onLogOut={props.onLogOut}
-        onBurger={props.onSettings}
+        onBurger={props.onBurger}
       ></NavBar>
     </header>
   );
