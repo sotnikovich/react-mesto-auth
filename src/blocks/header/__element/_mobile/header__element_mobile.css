@@ -1,5 +1,6 @@
 .header__element_mobile {
   font-weight: 500;
+  margin: 5px 0 0 0;
 }
 
 @media screen and (min-width:320px) and (max-width: 551px) {

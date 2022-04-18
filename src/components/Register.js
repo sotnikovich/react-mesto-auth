@@ -1,22 +1,12 @@
 import React from "react";
-import { Link, withRouter, useHistory } from "react-router-dom";
-import FieldSet from "./FieldSet";
-import * as auth from "../utils/auth";
+import { Link, withRouter } from "react-router-dom";
 
-function Register(props) {
+function Register({ onSubmit }) {
   const [values, setValues] = React.useState({ email: "", password: "" });
-  const history = useHistory();
 
   function handleSubmit(e) {
     e.preventDefault();
-    auth.register(values.email, values.password).then((res) => {
-      if (res.data) {
-        history.push("/signin");
-        props.onRegister();
-      } else if (res.message || res.error) {
-        props.onFail();
-      }
-    });
+    onSubmit(values.email, values.password);
   }
 
   function handleChange(e) {
@@ -24,32 +14,37 @@ function Register(props) {
     setValues({ ...values, [name]: value });
   }
   return (
-    <form className="register" onSubmit={handleSubmit}>
-      <FieldSet title="Регистрация" name="register" button="Зарегистрироваться">
+    <div className="register">
+      <h2 className="register__title">Регистрация</h2>
+      <form className="register__container" name="form" onSubmit={handleSubmit}>
         <input
           name="email"
           placeholder="Email"
           type="email"
           className="register__input"
-          onChange={handleChange}
           value={values.email || ""}
+          onChange={handleChange}
+          required
         />
         <input
           name="password"
           placeholder="Пароль"
           type="password"
           className="register__input"
-          onChange={handleChange}
           value={values.password || ""}
+          onChange={handleChange}
+          required
+          minLength="4"
+          maxLength="16"
         />
-      </FieldSet>
-      <p>
-        Уже зарегистрированы?{" "}
+        <button type="submit" className="register__button">
+          Зарегистрироваться
+        </button>
         <Link to="/signin" className="register__login hover">
-          Войти
+          Уже зарегистрированы? Войти
         </Link>
-      </p>
-    </form>
+      </form>
+    </div>
   );
 }
 export default withRouter(Register);

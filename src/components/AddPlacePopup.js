@@ -2,29 +2,24 @@ import React from "react";
 import PopupWithForm from "./PopupWithForm";
 
 function AddPlacePopup(props) {
-  const [name, setName] = React.useState("");
-  const [link, setLink] = React.useState("");
+  const [values, setValues] = React.useState({ name: "", link: "" });
 
-  function handleChangeName(e) {
-    setName(e.target.value);
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setValues({ ...values, [name]: value });
   }
 
-  function handleChangeLink(e) {
-    setLink(e.target.value);
-  }
+  React.useEffect(() => {
+    setValues({ name: "", link: "" });
+  }, [props.isOpen]);
 
   function handleSubmit(e) {
     e.preventDefault(e);
     props.onAddPlace({
-      name: name,
-      link: link,
+      name: values.name,
+      link: values.link,
     });
   }
-
-  React.useEffect(() => {
-    setName("");
-    setLink("");
-  }, [props.isOpen]);
 
   return (
     <PopupWithForm
@@ -38,14 +33,14 @@ function AddPlacePopup(props) {
       <input
         id="placeInput"
         className="modal__input"
-        name="title"
+        name="name"
         placeholder="Название"
         minLength="2"
         maxLength="30"
         required
         autoComplete="off"
-        value={name}
-        onChange={handleChangeName}
+        value={values.name}
+        onChange={handleChange}
       />
       <span className="modal__error" id="placeInputError"></span>
       <input
@@ -56,8 +51,8 @@ function AddPlacePopup(props) {
         placeholder="Ссылка на картинку"
         required
         autoComplete="off"
-        value={link}
-        onChange={handleChangeLink}
+        value={values.link}
+        onChange={handleChange}
       />
       <span className="modal__error" id="linkInputError"></span>
     </PopupWithForm>

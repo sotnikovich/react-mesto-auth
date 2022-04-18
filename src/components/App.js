@@ -19,41 +19,37 @@ import api from "../utils/api";
 import { useState, useEffect } from "react";
 
 function App() {
+  const history = useHistory();
+  const [email, setEmail] = useState("");
+  const [deletedCard, setDeletedCard] = useState({});
+  const [selectedCard, setSelectedCard] = useState({});
+  const [currentUser, setCurrentUser] = useState({});
+  const [cards, setCards] = useState([]);
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = useState(false);
   const [isImagePopupOpen, setImagePopupOpen] = useState(false);
   const [isConfirmPopupOpen, setConfirmPopupOpen] = useState(false);
-  const [deletedCard, setDeletedCard] = useState({});
-  const [selectedCard, setSelectedCard] = useState({});
-  const [currentUser, setCurrentUser] = useState({});
-  const [cards, setCards] = useState([]);
+  const [isRegSuccess, setIsRegSuccess] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [fail, setFail] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [isBurgerOpen, setIsBurgerOpen] = useState(false);
   const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
-
-  const history = useHistory();
-  const [email, setEmail] = useState("");
 
   function handleEditProfilePopupOpen() {
     setEditProfilePopupOpen(true);
   }
+
   function handleAddPlacePopupOpen() {
     setAddPlacePopupOpen(true);
   }
+
   function handleEditAvatarPopupOpen() {
     setEditAvatarPopupOpen(true);
   }
+
   function handleCardClick(card) {
     setSelectedCard(card);
     setImagePopupOpen(true);
-  }
-
-  function handleInfoTooltipOpen() {
-    setIsInfoTooltipOpen(true);
-    setSubmitted(true);
   }
 
   function handleBurgerClick() {
@@ -69,6 +65,7 @@ function App() {
       })
       .catch((err) => console.log(err));
   }
+
   function handleUpdateUser(data) {
     api
       .setUserInfo(data)
@@ -80,6 +77,7 @@ function App() {
   }
 
   useEffect(() => {
+    handleCheckToken();
     Promise.all([api.getUserInfo(), api.getInitialCards()])
       .then(([data, cards]) => {
         setCurrentUser(data);
@@ -142,36 +140,57 @@ function App() {
     setSelectedCard({});
   }
 
-  function handleLogin() {
-    handleTokenCheck();
-  }
-
   function handleLogOut() {
     localStorage.removeItem("token");
+    setLoggedIn(false);
     history.push("/signin");
   }
 
-  function handleTokenCheck() {
+  function handleCheckToken() {
     const token = localStorage.getItem("token");
     if (token) {
-      auth.checkToken(token).then((res) => {
-        if (res.data) {
-          setLoggedIn(!loggedIn);
+      auth
+        .checkToken(token)
+        .then((res) => {
+          setLoggedIn(true);
           setEmail(res.data.email);
           history.push("/");
-        } else if (res.message) {
-          return res.message;
-        }
-      });
-    } else {
-      return;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   }
 
-  function handleRegistrationFail() {
-    setIsInfoTooltipOpen(!isInfoTooltipOpen);
-    setSubmitted(!submitted);
-    setFail(!fail);
+  function handleLogin(email, password) {
+    auth
+      .authorize(email, password)
+      .then((res) => {
+        localStorage.setItem("token", res.token);
+        setLoggedIn(true);
+        setEmail(email);
+        history.push("/");
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsInfoTooltipOpen(true);
+        setIsRegSuccess(false);
+      });
+  }
+
+  function handleRegistration(email, password) {
+    auth
+      .register(email, password)
+      .then(() => {
+        setIsRegSuccess(true);
+        setIsInfoTooltipOpen(true);
+        history.push("/signin");
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsInfoTooltipOpen(true);
+        setIsRegSuccess(false);
+      });
   }
 
   return (
@@ -182,7 +201,7 @@ function App() {
           onClose={closeAllPopups}
           email={email}
           onLogOut={handleLogOut}
-        ></BurgerMobile>
+        />
         <Header
           loggedIn={loggedIn}
           email={email}
@@ -235,17 +254,13 @@ function App() {
         <InfoTooltip
           isOpen={isInfoTooltipOpen}
           onClose={closeAllPopups}
-          submitted={submitted}
-          failed={fail}
+          isRegSuccess={isRegSuccess}
         ></InfoTooltip>
         <Route path="/signup">
-          <Register
-            onRegister={handleInfoTooltipOpen}
-            onFail={handleRegistrationFail}
-          />
+          <Register onSubmit={handleRegistration} />
         </Route>
         <Route path="/signin">
-          <Login onLogin={handleLogin} onFail={handleRegistrationFail} />
+          <Login onSubmit={handleLogin} />
         </Route>
       </div>
     </CurrentUserContext.Provider>
