@@ -7,7 +7,6 @@ import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import ConfirmPopup from "./ConfirmPopup";
-import BurgerMobile from "./BurgerMobile";
 import ProtectedRoute from "./ProtectedRoute";
 import Register from "./Register";
 import Login from "./Login";
@@ -32,7 +31,6 @@ function App() {
   const [isConfirmPopupOpen, setConfirmPopupOpen] = useState(false);
   const [isRegSuccess, setIsRegSuccess] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [isBurgerOpen, setIsBurgerOpen] = useState(false);
   const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
 
   function handleEditProfilePopupOpen() {
@@ -50,10 +48,6 @@ function App() {
   function handleCardClick(card) {
     setSelectedCard(card);
     setImagePopupOpen(true);
-  }
-
-  function handleBurgerClick() {
-    setIsBurgerOpen(!isBurgerOpen);
   }
 
   function handleUpdateAvatar(data) {
@@ -143,7 +137,7 @@ function App() {
   function handleLogOut() {
     localStorage.removeItem("token");
     setLoggedIn(false);
-    history.push("/signin");
+    history.push("/sign-in");
   }
 
   function handleCheckToken() {
@@ -184,7 +178,7 @@ function App() {
       .then(() => {
         setIsRegSuccess(true);
         setIsInfoTooltipOpen(true);
-        history.push("/signin");
+        history.push("/sign-in");
       })
       .catch((err) => {
         console.log(err);
@@ -196,18 +190,7 @@ function App() {
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <BurgerMobile
-          isOpen={isBurgerOpen}
-          onClose={closeAllPopups}
-          email={email}
-          onLogOut={handleLogOut}
-        />
-        <Header
-          loggedIn={loggedIn}
-          email={email}
-          onLogOut={handleLogOut}
-          onBurger={handleBurgerClick}
-        />
+        <Header loggedIn={loggedIn} email={email} onSignOut={handleLogOut} />
         <Switch>
           <ProtectedRoute
             exact
@@ -256,10 +239,10 @@ function App() {
           onClose={closeAllPopups}
           isRegSuccess={isRegSuccess}
         ></InfoTooltip>
-        <Route path="/signup">
+        <Route path="/sign-up">
           <Register onSubmit={handleRegistration} />
         </Route>
-        <Route path="/signin">
+        <Route path="/sign-in">
           <Login onSubmit={handleLogin} />
         </Route>
       </div>
