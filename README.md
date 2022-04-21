@@ -1,4 +1,4 @@
-# Mesto
+# Проектная работа: "Mesto (Reactjs App)".
 
 ## Описание
 
@@ -6,14 +6,27 @@
 
 ## Технологии
 
-- Flex
-- Grid
-- БЭМ Методология
-- Webpack
-- React JS
-- API
-- Проект подключен к серверу
+* Flexbox
+* Grid Layout
+* Positioning Elements
+* Animation and Transform using CSS
+* BEM Methodology
+* File Structure and File Paths (Nested BEM)
+* Git
+* JavaScript (Asynchronous JS, OOP, Fetch API)
+* Webpack
+* React JS
+* Functional Components
+* Client-side form validation
 
-**Ссылка на GitHub Pages**
+## Инструкция по установке**
 
-Проект опубликован по [данной ссылке]().
+Клонировать репозиторий:
+```git clone https://github.com/sotnikovich/react-mesto-auth.git```
+В директории проекта запустить приложение в режиме разработки:
+```
+npm install
+npm start
+```
+## Будущая доработка проекта будет включать в себя:
+* Создание сервера на Nodejs
