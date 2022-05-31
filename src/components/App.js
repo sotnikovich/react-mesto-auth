@@ -10,7 +10,6 @@ import ConfirmPopup from "./ConfirmPopup";
 import ProtectedRoute from "./ProtectedRoute";
 import Register from "./Register";
 import Login from "./Login";
-import InfoTooltip from "./InfoTooltip";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import { Switch, Route, useHistory } from "react-router-dom";
 import * as auth from "../utils/auth";
@@ -80,33 +79,37 @@ function App() {
     setSelectedCard({});
   }
 
-  useEffect(() => {
-    handleCheckToken();
-    Promise.all([api.getUserInfo(), api.getInitialCards()])
-      .then(([data, cards]) => {
-        setCurrentUser(data);
-        setCards(cards);
+  const checkAuth = () => {
+    auth
+      .getContent()
+      .then((data) => {
+        if (data) {
+          setEmail(data.email);
+          setLoggedIn(true);
+          history.push("/");
+        }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    checkAuth();
   }, []);
 
-    function handleCheckToken() {
-    const jwt = localStorage.getItem("jwt");
-    if (jwt) {
-      auth
-        .getContent(jwt)
-        .then((res) => {
-          setLoggedIn(true);
-          setEmail(res.data.email);
-          history.push("/");
+  useEffect(() => {
+    if (loggedIn) {
+      Promise.all([api.getUserInfo(), api.getInitialCards()])
+        .then(([data, cards]) => {
+          setCurrentUser(data);
+          setCards(cards);
         })
-        .catch((err) => {
-          console.log(err);
-        });
+        .catch((err) => console.log(err));
     }
-  }
+  }, [loggedIn]);
 
-   function handleRegistration(email, password) {
+  const handleRegister = (email, password) => {
     auth
       .register(email, password)
       .then(() => {
@@ -119,13 +122,12 @@ function App() {
         setIsInfoTooltipOpen(true);
         setIsRegSuccess(false);
       });
-  }
+  };
 
   function handleLogin(email, password) {
-     auth
-      .authorize(email, password)
+    auth
+      .login(email, password)
       .then((res) => {
-        localStorage.setItem("jwt", res.jwt);
         setLoggedIn(true);
         setEmail(email);
         history.push("/");
@@ -138,7 +140,6 @@ function App() {
   }
 
   function handleLogOut() {
-    localStorage.removeItem("jwt");
     setLoggedIn(false);
     history.push("/signin");
   }
@@ -190,7 +191,11 @@ function App() {
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <Header loggedIn={loggedIn} email={email} onSignOut={handleLogOut} />
+        <Header
+          loggedIn={loggedIn}
+          email={currentUser.email}
+          onSignOut={handleLogOut}
+        />
         <Switch>
           <ProtectedRoute
             exact
@@ -234,13 +239,8 @@ function App() {
           onClose={closeAllPopups}
           isOpen={isImagePopupOpen}
         />
-        <InfoTooltip
-          isOpen={isInfoTooltipOpen}
-          onClose={closeAllPopups}
-          isRegSuccess={isRegSuccess}
-        ></InfoTooltip>
         <Route path="/signup">
-          <Register onSubmit={handleRegistration} />
+          <Register onSubmit={handleRegister} />
         </Route>
         <Route path="/signin">
           <Login onSubmit={handleLogin} />

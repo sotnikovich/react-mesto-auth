@@ -11,32 +11,32 @@ class Api {
     return Promise.reject(`Ошибка ${res.status}`);
   }
 
-  getUserInfo(jwt) {
+  getUserInfo() {
     return fetch(`${this._baseUrl}/users/me`, {
       method: "GET",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${jwt}`,
+        "Content-Type": this._headers.contentType,
       },
+      credentials: "include",
     }).then((res) => this._checkResult(res));
   }
 
-  getInitialCards(jwt) {
+  getInitialCards() {
     return fetch(`${this._baseUrl}/cards`, {
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${jwt}`,
+        "Content-Type": this._headers.contentType,
       },
+      credentials: "include",
     }).then((res) => this._checkResult(res));
   }
 
-  setUserInfo(data, jwt) {
+  setUserInfo(data) {
     return fetch(`${this._baseUrl}/users/me`, {
       method: "PATCH",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${jwt}`,
+        "Content-Type": this._headers.contentType,
       },
+      credentials: "include",
       body: JSON.stringify({
         name: data.name,
         about: data.about,
@@ -44,13 +44,13 @@ class Api {
     }).then((res) => this._checkResult(res));
   }
 
-  addNewCard(data, jwt) {
+  addNewCard(data) {
     return fetch(`${this._baseUrl}/cards`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${jwt}`,
+        "Content-Type": this._headers.contentType,
       },
+      credentials: "include",
       body: JSON.stringify({
         name: data.name,
         link: data.link,
@@ -58,23 +58,23 @@ class Api {
     }).then((res) => this._checkResult(res));
   }
 
-  deleteCard(data, jwt) {
+  deleteCard(data) {
     return fetch(`${this._baseUrl}/cards/${data}`, {
       method: "DELETE",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${jwt}`,
+        "Content-Type": this._headers.contentType,
       },
+      credentials: "include",
     }).then((res) => this._checkResult(res));
   }
 
-  setLike(id, jwt) {
+  setLike(id) {
     return fetch(`${this._baseUrl}/cards/likes/${id}`, {
       method: "PUT",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${jwt}`,
+        "Content-Type": this._headers.contentType,
       },
+      credentials: "include",
     }).then((res) => this._checkResult(res));
   }
 
@@ -86,23 +86,23 @@ class Api {
     }
   }
 
-  deleteLike(id, jwt) {
+  deleteLike(id) {
     return fetch(`${this._baseUrl}/cards/likes/${id}`, {
       method: "DELETE",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${jwt}`,
+        "Content-Type": this._headers.contentType,
       },
+      credentials: "include",
     }).then((res) => this._checkResult(res));
   }
 
-  setUserAvatar(data, jwt) {
+  setUserAvatar(data) {
     return fetch(`${this._baseUrl}/users/me/avatar`, {
       method: "PATCH",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${jwt}`,
+        "Content-Type": this._headers.contentType,
       },
+      credentials: "include",
       body: JSON.stringify({
         avatar: data.avatar,
       }),
@@ -113,8 +113,7 @@ class Api {
 const api = new Api({
   baseUrl: "http://localhost:3000",
   headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+    contentType: "application/json",
   },
 });
 

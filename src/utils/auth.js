@@ -14,28 +14,30 @@ export const register = (email, password) => {
       Accept: "application/json",
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify({ email, password }),
   }).then(checkResult);
 };
 
-export const authorize = (email, password) => {
+export const login = (email, password) => {
   return fetch(`${BASE_URL}/signin`, {
     method: "POST",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify({ email, password }),
-  })
-    .then(checkResult);
+  }).then(checkResult);
 };
 
-export const getContent = (jwt) => {
+export const getContent = () => {
   return fetch(`${BASE_URL}/users/me`, {
     method: "GET",
     headers: {
-       "Content-Type": "application/json",
-      Authorization: `${jwt}`,
+      Accept: "application/json",
+      "Content-Type": "application/json",
     },
-  }).then(checkResult)
+    credentials: "include",
+  }).then(checkResult);
 };
