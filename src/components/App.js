@@ -70,6 +70,16 @@ function App() {
       .catch((err) => console.log(err));
   }
 
+  function closeAllPopups() {
+    setEditProfilePopupOpen(false);
+    setAddPlacePopupOpen(false);
+    setEditAvatarPopupOpen(false);
+    setImagePopupOpen(false);
+    setConfirmPopupOpen(false);
+    setIsInfoTooltipOpen(false);
+    setSelectedCard({});
+  }
+
   useEffect(() => {
     handleCheckToken();
     Promise.all([api.getUserInfo(), api.getInitialCards()])
@@ -79,6 +89,59 @@ function App() {
       })
       .catch((err) => console.log(err));
   }, []);
+
+    function handleCheckToken() {
+    const jwt = localStorage.getItem("jwt");
+    if (jwt) {
+      auth
+        .getContent(jwt)
+        .then((res) => {
+          setLoggedIn(true);
+          setEmail(res.data.email);
+          history.push("/");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }
+
+   function handleRegistration(email, password) {
+    auth
+      .register(email, password)
+      .then(() => {
+        setIsRegSuccess(true);
+        setIsInfoTooltipOpen(true);
+        history.push("/signin");
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsInfoTooltipOpen(true);
+        setIsRegSuccess(false);
+      });
+  }
+
+  function handleLogin(email, password) {
+     auth
+      .authorize(email, password)
+      .then((res) => {
+        localStorage.setItem("jwt", res.jwt);
+        setLoggedIn(true);
+        setEmail(email);
+        history.push("/");
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsInfoTooltipOpen(true);
+        setIsRegSuccess(false);
+      });
+  }
+
+  function handleLogOut() {
+    localStorage.removeItem("jwt");
+    setLoggedIn(false);
+    history.push("/signin");
+  }
 
   function handleCardLike(card) {
     const isLiked = card.likes.some((i) => i._id === currentUser._id);
@@ -121,69 +184,6 @@ function App() {
       })
       .catch((err) => {
         console.log(err);
-      });
-  }
-
-  function closeAllPopups() {
-    setEditProfilePopupOpen(false);
-    setAddPlacePopupOpen(false);
-    setEditAvatarPopupOpen(false);
-    setImagePopupOpen(false);
-    setConfirmPopupOpen(false);
-    setIsInfoTooltipOpen(false);
-    setSelectedCard({});
-  }
-
-  function handleLogOut() {
-    localStorage.removeItem("token");
-    setLoggedIn(false);
-    history.push("/sign-in");
-  }
-
-  function handleCheckToken() {
-    const token = localStorage.getItem("token");
-    if (token) {
-      auth
-        .checkToken(token)
-        .then((res) => {
-          setLoggedIn(true);
-          setEmail(res.data.email);
-          history.push("/");
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-  }
-
-  function handleLogin(email, password) {
-    auth
-      .authorize(email, password)
-      .then((res) => {
-        localStorage.setItem("token", res.token);
-        setLoggedIn(true);
-        setEmail(email);
-        history.push("/");
-      })
-      .catch((err) => {
-        console.log(err);
-        setIsInfoTooltipOpen(true);
-        setIsRegSuccess(false);
-      });
-  }
-
-  function handleRegistration(email, password) {
-    auth
-      .register(email, password)
-      .then(() => {
-        setIsRegSuccess(true);
-        setIsInfoTooltipOpen(true);
-        history.push("/sign-in");
-      })
-      .catch((err) => {
-        console.log(err);
-        setIsInfoTooltipOpen(true);
-        setIsRegSuccess(false);
       });
   }
 
@@ -239,10 +239,10 @@ function App() {
           onClose={closeAllPopups}
           isRegSuccess={isRegSuccess}
         ></InfoTooltip>
-        <Route path="/sign-up">
+        <Route path="/signup">
           <Register onSubmit={handleRegistration} />
         </Route>
-        <Route path="/sign-in">
+        <Route path="/signin">
           <Login onSubmit={handleLogin} />
         </Route>
       </div>
